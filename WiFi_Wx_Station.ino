@@ -168,12 +168,13 @@ void loop(void){
     Serial.println("Upload complete");
     } 
     else {
-      Serial.println(F("Connection failed"));  
-      lpDelay(20); 
-      // Low Power Delay.  Drops the system clock to its lowest setting and sleeps for 256*quarterSeconds milliseconds.
-      // ie: value of 4=1sec    20=5sec                  
+      Serial.println(F("Connection failed"));                 
       return;
       }
+    
+    lpDelay(20); 
+    // Low Power Delay.  Drops the system clock to its lowest setting and sleeps for 256*quarterSeconds milliseconds.
+    // ie: value of 4=1sec    20=5sec   
       
     
      
