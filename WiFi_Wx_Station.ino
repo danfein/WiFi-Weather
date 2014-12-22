@@ -9,7 +9,7 @@ Sparkfun hardware library by Shawn Hymel, https://github.com/sparkfun/SFE_CC3000
 Sensors from Adafruit, see their product pages for those libraries.
 
 Notes:
-This project assumes battery power and to save power it will sleep for 5 seconds, wake, send data and sleep again.
+This project assumes battery power and to save power it will rest for awhile, wake, send data and rest again.
 
 You will need to sign up for a user account at wunderground.com, to get your pass
 When you register a station you will get an ID
@@ -95,27 +95,21 @@ void loop(void){
         UVindex /= 100.0; 
               
                
-  /*
+  //*
   // Debug, or you can sit up all night watching it.
   Serial.println("+++++++++++++++++++++++++");
-  Serial.println("RTC current TIME ");
-
-   if(now.hour() < 10){            // Zero padding if value less than 10 ie."09" instead of "9"
-    Serial.print(" ");
-    Serial.print((now.hour() > 12) ? now.hour() - 12 : ((now.hour() == 0) ? 12 : now.hour()), DEC); // Conversion to AM/PM  
-  }
-  else{
-    Serial.print((now.hour() > 12) ? now.hour() - 12 : ((now.hour() == 0) ? 12 : now.hour()), DEC); // Conversion to AM/PM
-  } 
-  Serial.print(':');
-  if (now.minute() <= 10){
-    Serial.print("0");
-  }
+  Serial.println("RTC TIME ");
+  Serial.print("&dateutc=");
+  Serial.print(now.year());
+  Serial.print("-");
+  Serial.print(now.month());
+  Serial.print("-");
+  Serial.print(now.day());
+  Serial.println("+");
+  Serial.print(now.hour());
+  Serial.print(":");
   Serial.print(now.minute());
-  Serial.print(':');
-  if (now.second() <= 10){
-    Serial.print("0");
-  }
+  Serial.print(":");
   Serial.println(now.second());
   
   Serial.print("temp= ");
@@ -130,11 +124,12 @@ void loop(void){
   Serial.println(humidity);
   Serial.print("UV: ");  
   Serial.println(UVindex);
- */
+ //*/
  
  //Send data to Weather Underground
- if (client.connect(SERVER, 80)) { // Ship it!
+ if (client.connect(SERVER, 80)) { 
     Serial.println("Sending DATA ");
+    // Ship it!
     client.print(WEBPAGE); 
     client.print("ID=");
     client.print(ID);
@@ -147,7 +142,7 @@ void loop(void){
     client.print("-");
     client.print(now.day());
     client.print("+");
-    client.print(now.hour()+8);// YOU MUST Add 8 hours -for pacific time - to get back to UTC or Wunderground wont show RAPID FIRE
+    client.print(now.hour()+8);// YOU MUST Add 8 hours -for pacific time- to get back to UTC or Wunderground wont show RAPID FIRE
     client.print("%3A");
     client.print(now.minute());
     client.print("%3A");
@@ -172,12 +167,8 @@ void loop(void){
       return;
       }
     
-    lpDelay(20); 
-    // Low Power Delay.  Drops the system clock to its lowest setting and sleeps for 256*quarterSeconds milliseconds.
-    // ie: value of 4=1sec    20=5sec   
-      
-    
-     
+    lpDelay(1200); // Low Power Delay. Value of 4=1sec, 40=10sec, 1200=5min   
+ 
 }
 
 /****************************************************************
@@ -199,6 +190,8 @@ double dewPoint(double tempf, double humidity)
   return (241.88 * T) / (17.558-T);
 }
 
+ // Low Power Delay.  Drops the system clock to its lowest setting and sleeps for 256*quarterSeconds milliseconds.
+ // ie: value of 4=1sec    20=5sec          
 int lpDelay(int quarterSeconds) {
   int oldClkPr = CLKPR;   // save old system clock prescale
   CLKPR = 0x80;           // Tell the AtMega we want to change the system clock
