@@ -11,57 +11,62 @@ Sensors from Adafruit, see their product pages for those libraries.
 Notes:
 This project assumes battery power and to save power it will rest for awhile, wake, send data and rest again.
 
-You will need to sign up for a user account at wunderground.com, to get your pass
-When you register a station you will get an ID
+You will need to sign up for a free account at wunderground.com, to get your pass
+When you register a station you will get an ID (If you send data you get ad free membership free)
+
+Sign up at http://www.wunderground.com/personal-weather-station/signup.asp
 
 Wunderground wants UTC Zulu, not local time, if your RTC is local, offset it in code.
 Wunderground Upload guidelines: http://wiki.wunderground.com/index.php/PWS_-_Upload_Protocol
 
-This code assumes your wifi credentials are already saved in the CC3000's non-volitile memory
+This code assumes your wifi credentials are already saved in the CC3000's non-volatile memory
 ****************************************************************/
+
+int DEBUG = 0;      // DEBUG counter; if set to 1, will write values back via serial
 
 #include <Wire.h>
 #include <SPI.h>
-#include <SFE_CC3000.h>
-#include <SFE_CC3000_Client.h>
-#include "DHT.h"
-#include <Adafruit_BMP085.h>
-#include "Adafruit_SI1145.h"
-#include "RTClib.h"
+#include <SFE_CC3000.h>         //Wifi
+#include <SFE_CC3000_Client.h>  //Wifi
+#include "DHT.h"                //Humidity
+#include <Adafruit_BMP085.h>    //Barometer
+#include "Adafruit_SI1145.h"    //UV sensor
+//#include "RTClib.h"           //Real time clock -- If used
 
-#include <io.h> //for the sleepies
+//#include <io.h> //for the sleepies -- Needed if using lpdelay (sleeping when using battery)
 
 // Pins
 #define CC3000_INT      2   // Needs to be an interrupt pin (D2/D3)
 #define CC3000_EN       7   // Can be any digital pin
 #define CC3000_CS       10  // Preferred is pin 10 on Uno
 #define DHTPIN          3   // DHT 22  (AM2302)
+                            // The UV sensor and Barometer are on i2C pins
 
 // Constants
-unsigned int timeout = 30000;             // Milliseconds
+unsigned int timeout = 30000;                          // Milliseconds -- 1000 = 1 Second
 #define DHTTYPE DHT22                                  // DHT 22 (AM2302)
 char SERVER[] = "rtupdate.wunderground.com";           // Realtime update server - RapidFire
 //char SERVER [] = "weatherstation.wunderground.com";  //standard server
 char WEBPAGE [] = "GET /weatherstation/updateweatherstation.php?";
-char ID [] = "xxxxxx";
+char ID [] = "xxxxxx"; 
 char PASSWORD [] = "xxxxxxxx";
 
 // Global Variables
 SFE_CC3000 wifi = SFE_CC3000(CC3000_INT, CC3000_EN, CC3000_CS);
 SFE_CC3000_Client client = SFE_CC3000_Client(wifi);
-RTC_DS1307 rtc;                         // Hardware RTC time
+//RTC_DS1307 rtc;                       // Hardware RTC time -- If used
 DHT dht(DHTPIN, DHTTYPE);               // DHT 22  (AM2302)
 Adafruit_BMP085 bmp;                    // BMP Pressure Sensor
 Adafruit_SI1145 uv = Adafruit_SI1145(); // UV Sensor
 unsigned int connections = 0;           // number of connections
 
 
-
+//Setup runs once at power on or reset
 void setup(void){
   //Turn everything on
   Serial.begin(38400);
   Wire.begin();    //Rtc
-  rtc.begin();     //Hardware rtc
+  //rtc.begin();     //Hardware rtc
   bmp.begin();     //Pressure sensor
   dht.begin();     //Humidity Sensor
   
@@ -78,11 +83,13 @@ void setup(void){
   if ( !wifi.fastConnect(timeout) ) {
     Serial.println("Error: Could not connect to network");
   }
-}
 
+}//End of Setup
+
+//Loop runs continuously
 void loop(void){  
-  // Lets see what time the RTC is set at! 
-  DateTime now = rtc.now();
+  //Lets see what time the RTC is set at! -- If RTC is used
+  //DateTime now = rtc.now();
 
   //Get sensor data
   float tempc = bmp.readTemperature(); //Can read temp from bmp or dht sensors
@@ -93,11 +100,12 @@ void loop(void){
   float UVindex = uv.readUV();
   // the index is multiplied by 100 so to get the integer index, divide by 100!
         UVindex /= 100.0; 
-              
-               
-  //*
+                            
+  if (DEBUG) {   
   // Debug, or you can sit up all night watching it.
   Serial.println("+++++++++++++++++++++++++");
+  /*
+  //If you are using Real Time Clock (RTC)
   Serial.println("RTC TIME ");
   Serial.print("&dateutc=");
   Serial.print(now.year());
@@ -111,7 +119,7 @@ void loop(void){
   Serial.print(now.minute());
   Serial.print(":");
   Serial.println(now.second());
-  
+  */
   Serial.print("temp= ");
   Serial.print(tempf);
   Serial.println(" *F");
@@ -124,11 +132,13 @@ void loop(void){
   Serial.println(humidity);
   Serial.print("UV: ");  
   Serial.println(UVindex);
- //*/
+  }//End debug loop
  
  //Send data to Weather Underground
  if (client.connect(SERVER, 80)) { 
-    Serial.println("Sending DATA ");
+    if (DEBUG) {    
+      Serial.println("Sending DATA ");
+      }
     // Ship it!
     client.print(WEBPAGE); 
     client.print("ID=");
@@ -136,6 +146,9 @@ void loop(void){
     client.print("&PASSWORD=");
     client.print(PASSWORD);
     client.print("&dateutc=");
+    client.print("now");    //can use instead of RTC if sending in real time
+    /*
+    //If you are using Real Time Clock (RTC)
     client.print(now.year());
     client.print("-");
     client.print(now.month());
@@ -147,6 +160,7 @@ void loop(void){
     client.print(now.minute());
     client.print("%3A");
     client.print(now.second());
+    */
     client.print("&tempf=");
     client.print(tempf);
     client.print("&baromin=");
@@ -160,16 +174,21 @@ void loop(void){
     //client.print("&action=updateraw");//Standard update
     client.print("&softwaretype=Arduino%20UNO%20version1&action=updateraw&realtime=1&rtfreq=2.5");//Rapid Fire
     client.println();
-    Serial.println("Upload complete");
-    } 
+    
+    if (DEBUG) {   
+      Serial.println("Upload complete");
+      }
+      
+   }//End send loop 
     else {
-      Serial.println(F("Connection failed"));                 
+      if (DEBUG) { Serial.println(F("Connection failed")); }
       return;
       }
     
-    lpDelay(1200); // Low Power Delay. Value of 4=1sec, 40=10sec, 1200=5min   
- 
-}
+    delay(2500); // --If plugged in send every 2.5 seconds  
+    //lpDelay(1200); // Low Power Delay. Value of 4=1sec, 40=10sec, 1200=5min --If battery, send every 5 min.
+
+}//End loop
 
 /****************************************************************
 
