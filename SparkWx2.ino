@@ -23,8 +23,8 @@ idDHT22 DHT22(idDHT22pin, dht22_wrapper);
     char WEBPAGE [] = "GET /weatherstation/updateweatherstation.php?";
 
     //Station Identification
-    char ID [] = "KVACOEBU6";
-    char PASSWORD [] = "weather4all";
+    char ID [] = "xxx";
+    char PASSWORD [] = "xxx";
 
 //Conection nonsense
     TCPClient client;
