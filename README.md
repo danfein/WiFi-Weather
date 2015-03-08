@@ -1,5 +1,4 @@
 # WiFi-Weather
-Wifi enabled Arduino Weather station sending data to Weather Underground
 
 WiFi Weather Station that sends data to Weather Underground for storage and viewing
 
