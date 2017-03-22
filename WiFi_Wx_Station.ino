@@ -172,6 +172,11 @@ void loop(void){
     client.print(UVindex);
     //client.print("&action=updateraw");//Standard update
     client.print("&softwaretype=Arduino%20UNO%20version1&action=updateraw&realtime=1&rtfreq=2.5");//Rapid Fire
+    client.print(" HTTP/1.0\r\n");
+  	client.print("Accept: text/html\r\n");
+  	client.print("Host: ");
+  	client.print(SERVER);
+  	client.print("\r\n\r\n");
     client.println();
     
     if (DEBUG) {   
