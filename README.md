@@ -11,5 +11,5 @@ When you register a station you will get an ID
 Sign up at http://www.wunderground.com/personal-weather-station/signup.asp
 
 Wunderground wants UTC Zulu, not local time, if your RTC is local, offset it in code.
-Wunderground Upload guidelines: http://wiki.wunderground.com/index.php/PWS_-_Upload_Protocol
+Wunderground Upload guidelines: https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
 This code assumes your wifi credentials are already saved in the CC3000's non-volitile memory
