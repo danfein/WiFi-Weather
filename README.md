@@ -22,4 +22,3 @@ Original discussion: https://forums.adafruit.com/viewtopic.php?t=49032
 WiFi adaptation and additional modifications: Dan Fein, 2015.
 
 Uses the SparkFun CC3000 WiFi library by Shawn Hymel and sensor libraries from Adafruit.
----
