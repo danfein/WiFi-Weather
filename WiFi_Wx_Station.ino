@@ -3,10 +3,18 @@ Arduino Weather Station (WiFi)
 
 Sparkfun Wifi shield on an Arduino Uno: Weather station that sends data to wunderground.com
 
-By Dan Fein
+---
+Original weather-station implementation: Adapted from code published by Adafruit forum user fmbfla (“the drunkin programer”), January 2014.
+
+Original discussion: https://forums.adafruit.com/viewtopic.php?t=49032
+
+WiFi adaptation and additional modifications: Dan Fein, 2015.
+
+Uses the SparkFun CC3000 WiFi library by Shawn Hymel and sensor libraries from Adafruit.
 
 Sparkfun WiFi library by Shawn Hymel, https://github.com/sparkfun/SFE_CC3000_Library
 Sensors from Adafruit, see their product pages for those libraries.
+---
 
 Notes:
 This project has options to conserve battery power. To save power use lpDelay to rest for awhile, wake, send data and rest again.
