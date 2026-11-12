@@ -13,3 +13,13 @@ Sign up at http://www.wunderground.com/personal-weather-station/signup.asp
 Wunderground wants UTC Zulu, not local time, if your RTC is local, offset it in code.
 Wunderground Upload guidelines: https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
 This code assumes your wifi credentials are already saved in the CC3000's non-volitile memory
+
+---
+Original weather-station implementation: Adapted from code published by Adafruit forum user fmbfla (“the drunkin programer”), January 2014.
+
+Original discussion: https://forums.adafruit.com/viewtopic.php?t=49032
+
+WiFi adaptation and additional modifications: Dan Fein, 2015.
+
+Uses the SparkFun CC3000 WiFi library by Shawn Hymel and sensor libraries from Adafruit.
+---
